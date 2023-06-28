@@ -1,68 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Find Instagram IDs Nearby</title>
+  <title>Find Nearby Instagram IDs</title>
   <style>
     #map {
       height: 400px;
       width: 100%;
-    
     }
-    
-}
   </style>
 </head>
 <body>
-     
-  <h1>Find Instagram IDs Nearby</h1>
+  <h1>Find Nearby Instagram IDs</h1>
+
+  <form onsubmit="findNearbyLocations(event)">
+    <label for="instagramID">Enter your Instagram ID:</label>
+    <input type="text" id="instagramID" required>
+    <button type="submit">Find Nearby Locations</button>
+  </form>
+  
   <div id="map"></div>
 
   <script>
-      
-      
     function initMap() {
-   
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          var currentLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
-          var map = new google.maps.Map(document.getElementById('map'), {
-            center: currentLocation,
-            zoom: 15
-          });
-
-          
-          var apiUrl = 'https://api.instagram.com/v1/locations/search?lat=' + currentLocation.lat + '&lng=' + currentLocation.lng + '&access_token=YOUR_ACCESS_TOKEN';
-
-          
-          fetch(apiUrl)
-            .then(function(response) {
-              return response.json();
-            })
-            .then(function(data) {
-              
-              data.data.forEach(function(place) {
-                var placeName = place.name;
-                var instagramId = place.id;
-                var marker = new google.maps.Marker({
-                  position: {lat: place.latitude, lng: place.longitude},
-                  map: map,
-                  title: placeName
-                });
-                marker.addListener('click', function() {
-                  alert('Instagram ID of ' + placeName + ': ' + instagramId);
-                });
-              });
-            })
-            .catch(function(error) {
-              console.log('Error:', error);
-            });
-        });
+        navigator.geolocation.getCurrentPosition(showMap);
+      } else {
+        alert("Geolocation is not supported by this browser.");
       }
     }
-    
+
+    function showMap(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: latitude, lng: longitude },
+        zoom: 15
+      });
+
+      const marker = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map,
+        title: "You are here"
+      });
+    }
+
+    function findNearbyLocations(event) {
+      event.preventDefault();
+
+      const instagramID = document.getElementById("instagramID").value;
+      
+      console.log(`Finding nearby locations for Instagram ID: ${instagramID}`);
+    }
   </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmSkZpeDKYKCOYSJesFfF8amsquzlQxFU&callback=initMap"></script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmSkZpeDKYKCOYSJesFfF8amsquzlQxFU&callback=initMap" async defer></script>
 </body>
 </html>
+
